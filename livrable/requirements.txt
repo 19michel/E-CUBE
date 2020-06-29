@@ -1,0 +1,18 @@
+## Général ##
+
+numpy
+pandas
+matplotlib
+
+
+## Calcul d'IRIS ##
+
+shapely
+shapefile
+pyproj
+simpledbf
+
+
+## Densités et optimisation ##
+
+scipy
