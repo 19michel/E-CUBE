@@ -8,7 +8,7 @@ matplotlib
 ## Calcul d'IRIS ##
 
 shapely
-shapefile
+pyshp
 pyproj
 simpledbf
 
