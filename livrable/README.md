@@ -20,6 +20,6 @@ Après avoir récupérer les données, il a fallu créé une distribution statis
 
 La dernière étape consiste à utiliser les distributions précédentes afin d'obtenir une approximation de la consommation électrique des entreprises. Pour chaque IRIS en France, on construit pour chaque entreprise une courbe de probabilité de la consommation. Puis on effectue une résolution d'un problème d'optimisation sous contraintes afin de maximiser la probabilité pour chaque entreprise tout en respectant une valeur total de consommation dans l'IRIS donnée par une autre base de données.
 
-##GUI
+## GUI
 
 La visualisation a été faite à l'aide du package Shiny de R, car facile à prendre en main et adapté aux études statistiques. Cette visualisation permet d'avoir un premier aperçu des données grâce à l'estimation obtenue avec l'optimisation. On obtient des données en entrant un code SIRET, ou bien des informations par IRIS, région ou secteur d'activité (APE). 
