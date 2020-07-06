@@ -7,3 +7,4 @@ livrable/ecube_conso.egg-info
 .Rhistory
 .RData
 .DS_Store
+.vscode
