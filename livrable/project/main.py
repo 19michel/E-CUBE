@@ -10,15 +10,25 @@ import shapefile
 from pyproj import Proj, transform, CRS
 import scipy.stats
 import scipy.optimize
+import json
+
+# Lecture des chemins d'accès situés dans le fichier data.json
+
+json_file = json.load("data.json")
+SIREN_path=json_file['SIREN']
+CLAP_path=json_file['CLAP']
+SDES_path=json_file['SDES']
+IRIS_path=json_file['IRIS']
+data_path=json_file['data']
 
 # Importation des bases de données SIRENE
 
 def siren_eta_geo_importforIRIS():
-    siren_eta_geo = pd.read_csv("data/SIREN/StockEtablissementActif_utf8_geo.csv", sep=',',usecols=["siren", "siret", "codeCommuneEtablissement", "longitude", "latitude"])
+    siren_eta_geo = pd.read_csv(SIREN_path + "/StockEtablissementActif_utf8_geo.csv", sep=',',usecols=["siren", "siret", "codeCommuneEtablissement", "longitude", "latitude"])
     return siren_eta_geo
     
 def siren_ul_importforIRIS():
-    siren_ul = pd.read_csv("data/SIREN/StockUniteLegale_utf8.csv", sep=',',usecols=["siren", "categorieJuridiqueUniteLegale"])
+    siren_ul = pd.read_csv(SIREN_path + "/StockUniteLegale_utf8.csv", sep=',',usecols=["siren", "categorieJuridiqueUniteLegale"])
     return siren_ul
 
 
@@ -27,27 +37,27 @@ def siren_ul_importforIRIS():
 
 def shapes_importforIRIS():
 
-    file_name_metro="/mnt/c/Users/guera/projects/E-CUBE/data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2019/CONTOURS-IRIS.shp"
+    file_name_metro=IRIS_path + "/CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2019/CONTOURS-IRIS.shp"
     sh_metro = shapefile.Reader(file_name_metro)        # Le module shapefile permet de lire des fichiers .shp
     shapes_metro= sh_metro.shapes()                     
     
-    file_name_guad="/mnt/c/Users/guera/projects/E-CUBE/data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_GLP-2019/CONTOURS-IRIS.shp"
+    file_name_guad=IRIS_path +"/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_GLP-2019/CONTOURS-IRIS.shp"
     sh_guad = shapefile.Reader(file_name_guad)
     shapes_guad= sh_guad.shapes()
     
-    file_name_mart="/mnt/c/Users/guera/projects/E-CUBE/data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_MTQ-2019/CONTOURS-IRIS.shp"
+    file_name_mart=IRIS_path +"/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_MTQ-2019/CONTOURS-IRIS.shp"
     sh_mart = shapefile.Reader(file_name_mart)
     shapes_mart= sh_mart.shapes()
     
-    file_name_may="/mnt/c/Users/guera/projects/E-CUBE/data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGM04UTM38S_MYT-2019/CONTOURS-IRIS.shp"
+    file_name_may=IRIS_path +"/CONTOURS-IRIS_2-1_SHP_RGM04UTM38S_MYT-2019/CONTOURS-IRIS.shp"
     sh_may = shapefile.Reader(file_name_may)
     shapes_may= sh_may.shapes()
     
-    file_name_reu="/mnt/c/Users/guera/projects/E-CUBE/data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGR92UTM40S_REU-2019/CONTOURS-IRIS.shp"
+    file_name_reu=IRIS_path +"/CONTOURS-IRIS_2-1_SHP_RGR92UTM40S_REU-2019/CONTOURS-IRIS.shp"
     sh_reu = shapefile.Reader(file_name_reu)
     shapes_reu= sh_reu.shapes()
     
-    file_name_guy="/mnt/c/Users/guera/projects/E-CUBE/data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_UTM22RGFG95_GUF-2019/CONTOURS-IRIS.shp"
+    file_name_guy=IRIS_path +"/CONTOURS-IRIS_2-1_SHP_UTM22RGFG95_GUF-2019/CONTOURS-IRIS.shp"
     sh_guy = shapefile.Reader(file_name_guy)
     shapes_guy= sh_guy.shapes()
     
@@ -60,22 +70,22 @@ def shapes_importforIRIS():
 def iris_dfs_importforIRIS():
 
     from simpledbf import Dbf5          # Le module simpledbf permet de lire des fichiers .dbf
-    iris_metro_dbf=Dbf5("data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2019/CONTOURS-IRIS.dbf")
+    iris_metro_dbf=Dbf5(IRIS_path + "/CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2019/CONTOURS-IRIS.dbf")
     iris_metro_df=iris_metro_dbf.to_dataframe()
     
-    iris_guad_dbf=Dbf5("data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_GLP-2019/CONTOURS-IRIS.dbf")
+    iris_guad_dbf=Dbf5(IRIS_path + "/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_GLP-2019/CONTOURS-IRIS.dbf")
     iris_guad_df=iris_guad_dbf.to_dataframe()
     
-    iris_mart_dbf=Dbf5("data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_MTQ-2019/CONTOURS-IRIS.dbf")
+    iris_mart_dbf=Dbf5(IRIS_path + "/CONTOURS-IRIS_2-1_SHP_RGAF09UTM20_MTQ-2019/CONTOURS-IRIS.dbf")
     iris_mart_df=iris_mart_dbf.to_dataframe()
     
-    iris_may_dbf=Dbf5("data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGM04UTM38S_MYT-2019/CONTOURS-IRIS.dbf")
+    iris_may_dbf=Dbf5(IRIS_path + "/CONTOURS-IRIS_2-1_SHP_RGM04UTM38S_MYT-2019/CONTOURS-IRIS.dbf")
     iris_may_df=iris_may_dbf.to_dataframe()
     
-    iris_reu_dbf=Dbf5("data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_RGR92UTM40S_REU-2019/CONTOURS-IRIS.dbf")
+    iris_reu_dbf=Dbf5(IRIS_path + "/CONTOURS-IRIS_2-1_SHP_RGR92UTM40S_REU-2019/CONTOURS-IRIS.dbf")
     iris_reu_df=iris_reu_dbf.to_dataframe()
     
-    iris_guy_dbf=Dbf5("data/CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01/CONTOURS-IRIS/1_DONNEES_LIVRAISON_2020-01-00139/CONTOURS-IRIS_2-1_SHP_UTM22RGFG95_GUF-2019/CONTOURS-IRIS.dbf")
+    iris_guy_dbf=Dbf5(IRIS_path + "/CONTOURS-IRIS_2-1_SHP_UTM22RGFG95_GUF-2019/CONTOURS-IRIS.dbf")
     iris_guy_df=iris_guy_dbf.to_dataframe()
     
     return (iris_metro_df, iris_guad_df, iris_mart_df, iris_may_df, iris_reu_df, iris_guy_df)
@@ -283,7 +293,7 @@ def save(a,nb):
         
         #Enregistrement des résultats
         siren_without_auto_iris=pd.concat([siren_without_auto_iris,df], axis=0)
-        siren_without_auto_iris.to_csv(folder+"/data/SIREN/StockEtablissementActif_utf8_geo_iris.csv")
+        siren_without_auto_iris.to_csv( SIREN_path + "/StockEtablissementActif_utf8_geo_iris.csv")
         
         
 
@@ -291,14 +301,14 @@ def save(a,nb):
 
 def siren_iris_import():
 
-    siren_iris = pd.read_csv("data/SIREN/StockEtablissementActif_utf8_geo_iris_propre.csv", sep=',')
+    siren_iris = pd.read_csv(SIREN_path + "/StockEtablissementActif_utf8_geo_iris_propre.csv", sep=',')
     siren_iris=siren_iris.astype(str)
     return siren_iris
     
 
 def siren_eta_geo_import():
 
-    siren_eta_geo = pd.read_csv("data/SIREN/StockEtablissementActif_utf8_geo.csv", sep=',',usecols=["siren", "siret", "activitePrincipaleEtablissement","trancheEffectifsEtablissement"])   # On importe de nouvelles informations de la base SIRENE
+    siren_eta_geo = pd.read_csv(SIREN_path + "/StockEtablissementActif_utf8_geo.csv", sep=',',usecols=["siren", "siret", "activitePrincipaleEtablissement","trancheEffectifsEtablissement"])   # On importe de nouvelles informations de la base SIRENE
     siren_eta_geo = siren_eta_geo.astype(str)
     return siren_eta_geo
 
@@ -347,7 +357,7 @@ def df_conso_commune():
 #SDES
 
     # Importation de la base SDES et suppression des données incomplètes (l 313) ou des données inintéressantes (l 315)
-    df_sdes=pd.read_csv("data/SDES/donnees_elec_iris_2018.csv", sep=';', encoding='latin-1')
+    df_sdes=pd.read_csv(SDES_path + "/donnees_elec_iris_2018.csv", sep=';', encoding='latin-1')
     df_sdes.dropna(subset=['CODE_SECTEUR_NAF2'],inplace=True)       
     df_sdes.set_index('OPERATEUR',inplace=True)
     df_sdes.drop(index='RTE',inplace=True)
@@ -368,7 +378,7 @@ def df_conso_commune():
 #CLAP
 
     # Importation de la base CLAP et suppression des lignes et colonnes inutiles
-    df_clap_poste=pd.read_excel("data/CLAP/TD_CLAP2015_NA88_NBSAL.xls")
+    df_clap_poste=pd.read_excel(CLAP_path +"/TD_CLAP2015_NA88_NBSAL.xls")
     df_clap_poste=df_clap_poste.drop([0,1,2,3])
     df_clap_poste.rename(columns=df_clap_poste.iloc[0,:],inplace=True)
     df_clap_poste=df_clap_poste.drop([4])
@@ -394,7 +404,7 @@ def df_conso_commune():
     return df_conso_bis
 
 
-
+df_conso_commune=df_conso_commune()
 
 
 
@@ -414,13 +424,15 @@ def dens():
         plt.figure(f'{j}')
         plt.title(f'{j}')
         try:
-            a=plt.hist(df_conso_bis.loc[(j,)]['X'],bins=bins_hist)
+            a=plt.hist(df_conso_commune.loc[(j,)]['X'],bins=bins_hist)
             plt.plot(np.arange(0.25,50.25,0.5),a[0])
             Tab[int(j)]=a[0]
         except:
             None
         plt.savefig(f'figure/NAF2/{j}.png')
     return Tab
+
+Tab = dens()
     
 
 # On modélise les densités par une fonction statistique qui minimise l'erreur quadratique pour approximer les allures précédentes. Les fonctions statistiques sont choisies parmi la liste ci-dessous
@@ -440,7 +452,7 @@ def model(dist_names):
         if len(Tab[int(j)]) != 100:
             continue
         try:
-            data=df_conso_bis.loc[df_conso_bis['X']<50].loc[(j,),'X'].values.astype(int)
+            data=df_conso_commune.loc[df_conso_commune['X']<50].loc[(j,),'X'].values.astype(int)
         except:
             continue
         x=bins
@@ -495,6 +507,9 @@ def model(dist_names):
         model[int(j)]=(best_name,best_loc,best_scale,best_arg)
         
     return model
+
+
+model=model(dist_names)
     
 
 
@@ -615,4 +630,120 @@ def model_export():
         arr=dist.pdf(bins,*stat[3], loc=stat[1], scale=stat[2])
         dic[f'{j}']=arr
     df_saved_naf=pd.DataFrame(data=dic)
-    df_saved_naf.to_csv(f'densites/naf_bis.csv')
+    df_saved_naf.to_csv(f'densites/naf_model.csv')
+
+
+
+
+## Prise en compte des différences départementales 
+
+def df_conso_commune_dpt():
+
+    global REG
+
+    df_conso=df_conso_commune()
+
+    def reg(a):         # On ajoute une colonne région à la base précédemment créée pour élaborer les modèles
+        return a[:2]
+    df_conso.reset_index(inplace=True)
+    df_conso['REGION']=np.vectorize(reg)(df_conso['CODE_COMMUNE'])
+
+    REG=df_conso['REGION'].unique() # On récupère la liste des régions
+
+    df_conso.set_index(['REGION','CODE_SECTEUR_NAF2','CODE_COMMUNE'], inplace=True)
+    df_conso.sort_index(inplace=True)
+    
+    return df_conso
+
+df_conso_commune_dpt=df_conso_commune_dpt()
+
+
+# On obtient l'allure des densités sous forme d'histogrammes
+
+
+def dens_dpt():
+
+    n=len(NAF)
+    m=len(REG)
+    Tab=np.zeros((95,100,100))
+    for i in range(m):
+        
+        reg=REG[i]
+        print(reg)
+        
+        for j in range(n):
+            
+            naf=NAF[j]
+            print(naf)
+            try:
+                a=np.histogram(df_conso_commune_dpt.loc[(reg,naf,)]['X'],bins=bins_hist)
+                Tab[int(reg),int(naf)]=a[0]
+            except:
+                None
+    
+    return Tab
+
+tab_dpt=dens_dpt()
+
+
+# Puis on trouve une loi statistique qui correspond à chaque distribution
+
+
+def model_dpt(dist_names):
+
+    model_area=np.empty((95,100,4), dtype=object)
+
+
+    n=len(NAF)
+    m=len(REG)
+
+    for i in range(m):
+        
+        reg=REG[i]
+        print(reg)
+        
+        for j in range(n):
+            
+            naf=NAF[j]
+            print(naf)
+            
+            
+            try:
+                data=df_conso_commune_dpt.loc[df_conso_commune_dpt['X']<50].loc[(reg,naf,),'X'].values.astype(int)
+            except:
+                continue
+            x=bins
+            y=2*Tab_dpt[int(reg),int(naf)]/len(data)
+
+            sse = np.inf
+
+            # Pour chaque distribution
+            for name in dist_names:
+
+                # Modéliser
+                dist = getattr(scipy.stats, name)
+                param = dist.fit(data)
+
+                # Paramètres
+                loc = param[-2]
+                scale = param[-1]
+                arg = param[:-2]
+
+                # PDF
+                pdf = dist.pdf(x, *arg, loc=loc, scale=scale)
+                # SSE
+                model_sse = np.sum((y - pdf)**2)
+
+                # Si le SSE est ddiminué, enregistrer la loi
+                if model_sse < sse :
+                    best_pdf = pdf
+                    sse = model_sse
+                    best_loc = loc
+                    best_scale = scale
+                    best_arg = arg
+                    best_name = name
+
+
+            model_area[int(reg),int(naf)]=np.array([best_name,best_loc,best_scale,best_arg])
+    
+    return model_area
